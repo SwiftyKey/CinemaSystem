@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if filter_film_form %}
+        <form name="filter_films_form" method="POST">
+            <div class="row">
+                {{ filter_film_form.hidden_tag() }}
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_film_form.cinema }}
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_film_form.genre }}
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_film_form.submit(type="submit", class="btn btn-primary") }}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                {{ message }}
+            </div>
+        </form>
+        {% for film in films%}
+            <div class="col-md6 border rounded">
+                <h2>{{film["title"]}}</h2>
+                <div>
+                    Дата выхода - {{film["release_date"]}}
+                </div>
+                <div>
+                    Продолжительность - {{film["duration"]}}
+                </div>
+                <div>
+                    Режиссер - {{film["director"]}}
+                </div>
+                <div>
+                    <a href="/tickets_index/{{film['halls_id']}},{{film['sessions_id']}}" class="btn btn-success">
+                        Просмотреть билеты
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if filter_ticket_form %}
+        <form name="filter_tickets_form" method="POST">
+            <div class="row">
+                {{ filter_ticket_form.hidden_tag() }}
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_ticket_form.hall }}
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_ticket_form.date }}
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="mb-3">
+                        {{ filter_ticket_form.submit(type="submit", class="btn btn-primary") }}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                {{ message }}
+            </div>
+        </form>
+        <table class="table">
+            <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Номер</th>
+                  <th scope="col">Цена</th>
+                  <th scope="col">Ряд</th>
+                  <th scope="col">Место</th>
+                  <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets%}
+                    <tr>
+                      <th scope="row">{{loop.index}}</th>
+                      <td>{{ticket["number"]}}</td>
+                      <td>{{ticket["cost"]}}</td>
+                      <td>{{ticket["row"]}}</td>
+                      <td>{{ticket["place"]}}</td>
+                      <td>
+                        {% if current_user.is_authenticated %}
+                            <div>
+                                <a href="/buy/{{ ticket['id'] }}" class="btn btn-success">
+                                    Купить билет
+                                </a>
+                                <a href="/book/{{ ticket['id'] }}" class="btn btn-warning">
+                                    Забронировать билет
+                                </a>
+                            </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if user_tickets %}
+        <table class="table">
+            <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Номер</th>
+                  <th scope="col">Цена</th>
+                  <th scope="col">Ряд</th>
+                  <th scope="col">Место</th>
+                  <th scope="col">Дата</th>
+                  <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in user_tickets%}
+                    <tr>
+                      <th scope="row">{{loop.index}}</th>
+                      <td>{{ticket["number"]}}</td>
+                      <td>{{ticket["cost"]}}</td>
+                      <td>{{ticket["row"]}}</td>
+                      <td>{{ticket["place"]}}</td>
+                      <td>{{ticket["purchase_date"]}}</td>
+                      <td>{{ticket["operation"]}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if buy_form %}
+        <form name="buy_form" method="POST">
+            {{ buy_form.hidden_tag() }}
+            <div class="mb-3">
+                {{ buy_form.name(class="form-control", placeholder="Имя") }}
+            </div>
+            <div class="mb-3">
+                {{ buy_form.surname(class="form-control", placeholder="Фамилия") }}
+            </div>
+            <div class="mb-3">
+                {{ buy_form.number_card(class="form-control", placeholder="Номер карты") }}
+            </div>
+            <div class="mb-3">
+                {{ buy_form.code_security(class="form-control", placeholder="Код безопасности") }}
+            </div>
+            <div class="mb-3">
+                {{ buy_form.submit(type="submit", class="btn btn-primary") }}
+            </div>
+            <div class="mb-3">
+                {{ message }}
+            </div>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
